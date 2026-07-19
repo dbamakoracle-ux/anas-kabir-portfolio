@@ -1,0 +1,753 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Md Anas Kabir — Oracle Database Administrator</title>
+<meta name="description" content="Oracle Database Administrator | RAC, Grid Infrastructure, Performance Tuning, Security, GoldenGate, Exadata">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --paper: #F2F6F8;
+    --panel: #FFFFFF;
+    --ink: #14304A;
+    --ink-soft: #55697C;
+    --line: #D2DEE6;
+    --blue-deep: #0A2A45;
+    --blue-deep-2: #0F3559;
+    --blue-mid: #1C5175;
+    --cyan: #8FD1EE;
+    --cyan-dim: #4F86A3;
+    --copper: #B8722E;
+    --copper-soft: #F1E1CC;
+    --green: #3E8F6B;
+    --display: 'Space Grotesk', sans-serif;
+    --sans: 'IBM Plex Sans', sans-serif;
+    --mono: 'IBM Plex Mono', monospace;
+  }
+
+  *{ box-sizing: border-box; }
+  html{ scroll-behavior: smooth; }
+  body{
+    margin:0;
+    background: var(--paper);
+    color: var(--ink);
+    font-family: var(--sans);
+    -webkit-font-smoothing: antialiased;
+  }
+  a{ color: inherit; }
+  img{ max-width:100%; display:block; }
+  .wrap{ max-width: 1080px; margin: 0 auto; padding: 0 28px; }
+  :focus-visible{ outline: 2px solid var(--copper); outline-offset: 3px; }
+
+  @media (prefers-reduced-motion: no-preference){
+    .reveal{ opacity:0; transform: translateY(16px); transition: opacity .6s ease, transform .6s ease; }
+    .reveal.in{ opacity:1; transform: translateY(0); }
+  }
+
+  /* ---------- TICK / FRAME UTILITY (registration marks) ---------- */
+  .frame{ position: relative; }
+  .frame::before, .frame::after,
+  .frame .tick-br, .frame .tick-bl{
+    content:""; position:absolute; width:16px; height:16px;
+    border-color: var(--cyan-dim); pointer-events:none;
+  }
+  .frame::before{ top:0; left:0; border-top:1px solid var(--cyan-dim); border-left:1px solid var(--cyan-dim); }
+  .frame::after{ top:0; right:0; border-top:1px solid var(--cyan-dim); border-right:1px solid var(--cyan-dim); }
+  .frame .tick-bl{ bottom:0; left:0; border-bottom:1px solid var(--cyan-dim); border-left:1px solid var(--cyan-dim); }
+  .frame .tick-br{ bottom:0; right:0; border-bottom:1px solid var(--cyan-dim); border-right:1px solid var(--cyan-dim); }
+  .frame.on-light::before, .frame.on-light::after,
+  .frame.on-light .tick-bl, .frame.on-light .tick-br{ border-color: var(--line); }
+
+  /* ---------- NAV ---------- */
+  header.nav{
+    position: sticky; top:0; z-index: 50;
+    background: rgba(242,246,248,0.94);
+    backdrop-filter: blur(6px);
+    border-bottom: 1px solid var(--line);
+  }
+  .nav-inner{ display:flex; align-items:center; justify-content: space-between; padding: 16px 0; }
+  .nav-logo{ font-family: var(--display); font-size: 15px; font-weight:700; letter-spacing:0.01em; }
+  .nav-logo span{ color: var(--copper); }
+  nav.links{ display:flex; gap: 26px; }
+  nav.links a{ font-size: 13px; text-decoration:none; color: var(--ink-soft); font-weight:500; transition: color .15s ease; }
+  nav.links a:hover{ color: var(--ink); }
+  .nav-cta{ font-family: var(--mono); font-size: 11.5px; border: 1px solid var(--ink); padding: 7px 13px; text-decoration:none; color: var(--ink); transition: background .15s ease, color .15s ease; }
+  .nav-cta:hover{ background: var(--ink); color: var(--paper); }
+
+  /* ---------- HERO ---------- */
+  .hero{ background: var(--blue-deep); color: #DCEAF3; padding: 26px 0 0; overflow:hidden; }
+  .titleblock{
+    display:flex; justify-content:space-between; flex-wrap:wrap; gap:8px;
+    font-family: var(--mono); font-size: 11px; color: var(--cyan-dim);
+    padding: 10px 0; border-bottom: 1px solid rgba(143,209,238,0.25);
+    letter-spacing: 0.03em;
+  }
+  .hero-body{ padding: 52px 0 40px; }
+  .hero-grid{ display:grid; grid-template-columns: 1fr 220px; gap: 48px; align-items:start; }
+  .hero-id{ display:flex; flex-direction:column; align-items:center; gap:14px; }
+  .id-plate{
+    width: 200px; height: 200px; position:relative; flex-shrink:0;
+    border: 1px solid var(--cyan-dim);
+    padding: 8px;
+  }
+  .id-plate img{ width:100%; height:100%; object-fit:cover; filter: grayscale(12%); }
+  .id-plate .tick-bl, .id-plate .tick-br{ width:12px; height:12px; }
+  .id-caption{ font-family: var(--mono); font-size: 10.5px; color: var(--cyan-dim); letter-spacing:0.05em; text-align:center; }
+  .eyebrow-dark{ font-family: var(--mono); font-size: 12px; color: var(--cyan); letter-spacing:0.04em; margin-bottom:16px; }
+  .eyebrow-dark::before{ content:"// "; color: var(--cyan-dim); }
+  h1.title{
+    font-family: var(--display); font-weight:700;
+    font-size: clamp(32px, 4.6vw, 52px); line-height:1.1;
+    margin: 0 0 18px; max-width: 640px; color: #F3F9FC;
+  }
+  h1.title em{ font-style:normal; color: var(--cyan); }
+  .lede{ font-size: 16px; line-height:1.7; color: #B9CEDC; max-width: 560px; margin: 0 0 30px; }
+  .hero-actions{ display:flex; gap: 12px; flex-wrap:wrap; margin-bottom: 30px; }
+  .btn{
+    font-family: var(--sans); font-weight:600; font-size: 13.5px;
+    padding: 11px 20px; text-decoration:none; display:inline-flex; align-items:center; gap:8px;
+    transition: transform .12s ease, background .12s ease, color .12s ease;
+  }
+  .btn-primary{ background: var(--cyan); color: var(--blue-deep); }
+  .btn-primary:hover{ transform: translateY(-1px); background: #B3E1F5; }
+  .btn-ghost{ border: 1px solid var(--cyan-dim); color: #DCEAF3; }
+  .btn-ghost:hover{ border-color: var(--cyan); background: rgba(143,209,238,0.08); }
+
+  .id-tags{ display:flex; flex-wrap:wrap; gap:8px; margin-bottom: 34px; }
+  .id-tag{
+    font-family: var(--mono); font-size: 10.5px; letter-spacing:0.03em;
+    padding: 5px 10px; border: 1px solid rgba(143,209,238,0.35); color: var(--cyan);
+  }
+
+  /* ---------- SCHEMATIC (signature element) ---------- */
+  .schematic-wrap{ border-top: 1px solid rgba(143,209,238,0.25); padding: 30px 0 36px; }
+  .schematic-label{ font-family: var(--mono); font-size: 11px; color: var(--cyan-dim); letter-spacing:0.05em; margin-bottom:14px; }
+  .schematic{ width:100%; height:auto; }
+  .schematic text{ font-family: var(--mono); fill: var(--cyan); }
+  .schematic .sub{ fill: var(--cyan-dim); }
+  .schematic line, .schematic path{ stroke: var(--cyan-dim); stroke-width:1; fill:none; }
+  .schematic .solid{ stroke: var(--cyan); }
+  .schematic rect.node{ fill: rgba(143,209,238,0.05); stroke: var(--cyan); stroke-width:1; }
+  .schematic circle.pip{ fill: var(--green); }
+
+  .stat-row{ display:flex; flex-wrap:wrap; border-top: 1px solid rgba(143,209,238,0.25); }
+  .stat{ flex: 1 1 160px; padding: 20px 22px 22px 0; border-right: 1px solid rgba(143,209,238,0.2); }
+  .stat:last-child{ border-right:none; }
+  .stat-num{ font-family: var(--display); font-size: 28px; font-weight:700; color: #F3F9FC; }
+  .stat-label{ font-family: var(--mono); font-size: 10.5px; color: var(--cyan-dim); text-transform:uppercase; letter-spacing:0.03em; margin-top:4px; }
+
+  /* ---------- SECTION SCAFFOLDING ---------- */
+  section{ padding: 66px 0; border-bottom: 1px solid var(--line); }
+  .section-head{ display:flex; justify-content:space-between; align-items:flex-end; gap:16px; margin-bottom: 36px; padding-top: 14px; border-top: 1px solid var(--line); }
+  .sheet-no{ font-family: var(--mono); font-size: 11px; color: var(--ink-soft); letter-spacing:0.04em; }
+  .sheet-no b{ color: var(--copper); }
+  h2.section-title{ font-family: var(--display); font-size: 26px; font-weight:700; margin: 6px 0 0; }
+
+  /* ---------- ABOUT ---------- */
+  .about-grid{ display:grid; grid-template-columns: 1.5fr 1fr; gap: 44px; }
+  .about-text p{ font-size: 15px; line-height:1.8; color: var(--ink-soft); margin: 0 0 16px; }
+  .about-text strong{ color: var(--ink); }
+  .spec-table{ border-top: 1px solid var(--line); }
+  .spec-table h3{ font-family: var(--mono); font-size: 11px; text-transform:uppercase; letter-spacing:0.04em; color: var(--ink-soft); margin: 16px 0 10px; }
+  .spec-row{ display:flex; align-items:center; justify-content:space-between; gap:12px; padding: 11px 0; border-bottom: 1px solid var(--line); font-size: 13.5px; }
+  .spec-code{ font-family: var(--mono); font-size: 11px; color: var(--copper); width:34px; flex-shrink:0; }
+  .spec-name{ flex:1; }
+  .status-pip{ font-family: var(--mono); font-size: 10px; letter-spacing:0.03em; padding: 3px 8px; }
+  .status-pip.active{ color: var(--green); border:1px solid var(--green); }
+  .status-pip.open{ color: var(--copper); border:1px solid var(--copper); }
+
+  /* ---------- CERTIFICATIONS ---------- */
+  .cert-grid{ display:grid; grid-template-columns: repeat(auto-fit, minmax(230px, 1fr)); gap: 1px; background: var(--line); border: 1px solid var(--line); }
+  .cert{ background: var(--panel); padding: 24px 22px; position:relative; }
+  .stamp{
+    position:absolute; top:18px; right:18px; width:38px; height:38px; border-radius:50%;
+    border: 1.5px dashed var(--copper); display:flex; align-items:center; justify-content:center;
+    font-family: var(--mono); font-size: 8px; color: var(--copper); text-align:center; line-height:1.2;
+    transform: rotate(-8deg);
+  }
+  .cert-code{ font-family: var(--mono); font-size: 10.5px; color: var(--copper); letter-spacing:0.03em; margin-bottom:12px; padding-right:44px; }
+  .cert-name{ font-size: 14.5px; font-weight:600; line-height:1.4; margin-bottom:8px; padding-right:44px; }
+  .cert-name a{ color: inherit; text-decoration:none; border-bottom: 1px solid var(--line); transition: color .15s ease, border-color .15s ease; }
+  .cert-name a:hover{ color: var(--blue-mid); border-color: var(--blue-mid); }
+  .cert-issuer{ font-size: 12px; color: var(--ink-soft); }
+
+  .cert-more{ margin-top: 1px; }
+  .cert-more h3{ font-family: var(--mono); font-size: 11px; text-transform:uppercase; letter-spacing:0.04em; color: var(--ink-soft); margin: 28px 0 12px; }
+  .more-row{ display:flex; justify-content:space-between; align-items:baseline; gap:16px; padding: 10px 0; border-bottom: 1px solid var(--line); font-size: 13.5px; }
+  .more-row a{ text-decoration:none; color: var(--ink); border-bottom: 1px solid transparent; }
+  .more-row a:hover{ color: var(--blue-mid); border-color: var(--blue-mid); }
+  .more-date{ font-family: var(--mono); font-size: 11px; color: var(--ink-soft); white-space:nowrap; }
+
+  /* ---------- SKILLS ---------- */
+  .skills-grid{ display:grid; grid-template-columns: repeat(auto-fit, minmax(230px, 1fr)); gap: 30px; }
+  .skill-cat h3{ font-family: var(--mono); font-size: 11.5px; color: var(--blue-mid); margin: 0 0 12px; letter-spacing:0.02em; }
+  .skill-cat h3::before{ content:"§ "; color: var(--copper); }
+  .pill-row{ display:flex; flex-wrap:wrap; gap: 7px; }
+  .pill{ font-size: 12px; font-family: var(--mono); padding: 5px 10px; background: var(--panel); border: 1px solid var(--line); color: var(--ink-soft); }
+
+  /* ---------- EXPERIENCE (revision history) ---------- */
+  .rev-history{ display:flex; flex-direction:column; }
+  .rev-row{ display:grid; grid-template-columns: 56px 160px 1fr; gap: 24px; padding: 28px 0; border-top: 1px solid var(--line); }
+  .rev-row:first-child{ border-top:none; }
+  .rev-tag{
+    font-family: var(--mono); font-weight:600; font-size: 13px; color: var(--panel);
+    background: var(--blue-mid); width:40px; height:40px; display:flex; align-items:center; justify-content:center;
+    flex-shrink:0;
+  }
+  .rev-row:first-child .rev-tag{ background: var(--copper); }
+  .rev-period{ font-family: var(--mono); font-size: 12px; color: var(--ink-soft); padding-top:8px; }
+  .rev-role{ font-family: var(--display); font-size: 17px; font-weight:600; }
+  .rev-org{ font-size: 13px; color: var(--copper); margin: 3px 0 12px; }
+  .rev-list{ margin:0; padding-left: 18px; }
+  .rev-list li{ font-size: 13.5px; line-height:1.7; color: var(--ink-soft); margin-bottom:6px; }
+
+  /* ---------- PROJECTS (drawing sheets) ---------- */
+  .project{ border-top: 1px solid var(--line); padding: 26px 0; position:relative; }
+  .project:first-child{ border-top:none; }
+  .project-head{ display:flex; justify-content:space-between; align-items:baseline; gap:16px; flex-wrap:wrap; margin-bottom:8px; }
+  .sheet-tag{ font-family: var(--mono); font-size: 10.5px; color: var(--panel); background: var(--ink); padding: 2px 8px; }
+  .project-title{ font-family: var(--display); font-size: 16px; font-weight:600; }
+  .project-org{ font-family: var(--mono); font-size: 11px; color: var(--copper); white-space:nowrap; }
+  .project-desc{ font-size: 13.5px; line-height:1.75; color: var(--ink-soft); margin:0; }
+
+  /* ---------- EDU / LANG ---------- */
+  .edu-lang-grid{ display:grid; grid-template-columns: 1.4fr 1fr; gap: 40px; }
+  .edu-item{ padding: 16px 0; border-top: 1px solid var(--line); }
+  .edu-item:first-child{ border-top:none; }
+  .edu-degree{ font-size: 14.5px; font-weight:600; }
+  .edu-school{ font-size: 13px; color: var(--ink-soft); }
+  .edu-when{ font-family: var(--mono); font-size: 11px; color: var(--copper); margin-top:2px; }
+  .lang-item{ padding: 14px 0; border-top: 1px solid var(--line); }
+  .lang-item:first-child{ border-top:none; }
+  .lang-top{ display:flex; justify-content:space-between; font-size: 13.5px; margin-bottom:8px; }
+  .lang-level{ font-family: var(--mono); font-size: 10.5px; color: var(--ink-soft); }
+  .gauge{ height:4px; background: var(--line); position:relative; }
+  .gauge span{ position:absolute; top:0; left:0; height:100%; background: var(--blue-mid); }
+
+  /* ---------- FOOTER / TITLE BLOCK ---------- */
+  footer{ background: var(--blue-deep); color: #DCEAF3; padding: 60px 0 0; }
+  .contact-grid{ display:grid; grid-template-columns: 1.3fr 1fr; gap: 40px; padding-bottom: 40px; }
+  .eyebrow-dark2{ font-family: var(--mono); font-size:12px; color: var(--cyan); margin-bottom:16px; letter-spacing:0.03em; }
+  .contact-title{ font-family: var(--display); font-size: 26px; font-weight:700; line-height:1.3; margin:0; max-width:480px; color:#F3F9FC; }
+  .contact-list{ list-style:none; margin:0; padding:0; }
+  .contact-list li{ display:flex; justify-content:space-between; padding: 13px 0; border-top: 1px solid rgba(143,209,238,0.2); font-size: 13.5px; }
+  .contact-label{ font-family: var(--mono); font-size: 10.5px; color: var(--cyan-dim); text-transform:uppercase; }
+  .contact-list a{ text-decoration:none; color: #DCEAF3; border-bottom: 1px solid rgba(143,209,238,0.35); }
+  .contact-list a:hover{ color: var(--cyan); border-color: var(--cyan); }
+  .foot-titleblock{
+    border-top: 1px solid rgba(143,209,238,0.25);
+    display:flex; justify-content:space-between; flex-wrap:wrap; gap:8px;
+    font-family: var(--mono); font-size: 10.5px; color: var(--cyan-dim);
+    padding: 14px 0; letter-spacing:0.03em;
+  }
+
+  @media (max-width: 800px){
+    .hero-grid{ grid-template-columns:1fr; }
+    .hero-id{ flex-direction:row; justify-content:flex-start; }
+    .id-plate{ width:120px; height:120px; }
+    .about-grid, .edu-lang-grid, .contact-grid{ grid-template-columns:1fr; }
+    .rev-row{ grid-template-columns: 1fr; gap:8px; }
+    .rev-tag{ margin-bottom:4px; }
+  }
+</style>
+</head>
+<body>
+
+<header class="nav">
+  <div class="wrap nav-inner">
+    <div class="nav-logo">MAK<span>/</span>DBA</div>
+    <nav class="links">
+      <a href="#about">About</a>
+      <a href="#certifications">Certifications</a>
+      <a href="#skills">Skills</a>
+      <a href="#experience">Experience</a>
+      <a href="#projects">Projects</a>
+      <a href="#contact">Contact</a>
+    </nav>
+    <a class="nav-cta" href="./Md_Anas_Kabir_DBA.pdf" download>CV ↓</a>
+  </div>
+</header>
+
+<main>
+  <section class="hero frame">
+    <span class="tick-bl"></span><span class="tick-br"></span>
+    <div class="wrap">
+      <div class="titleblock">
+        <span>DWG NO. MAK&#8209;DBA&#8209;2026</span>
+        <span>REV 2026.07</span>
+        <span>SCALE: NTS</span>
+        <span>SHEET 01 / 07</span>
+      </div>
+      <div class="hero-body hero-grid">
+        <div>
+          <div class="eyebrow-dark">career.oracle_dba</div>
+          <h1 class="title">Keeping mission-critical <em>Oracle</em> systems online, tuned, and secure.</h1>
+          <p class="lede">
+            Md Anas Kabir — OCP-certified Oracle Database Administrator with 5+ years managing
+            mission-critical Oracle environments across healthcare, banking, and government sectors.
+            Specializing in RAC &amp; Grid Infrastructure, Data Guard, RMAN, performance tuning,
+            GoldenGate, and Exadata. Based in Dhaka, Bangladesh — available for immediate relocation.
+          </p>
+          <div class="hero-actions">
+            <a class="btn btn-primary" href="#contact">Get in touch</a>
+            <a class="btn btn-ghost" href="./Md_Anas_Kabir_DBA.pdf" download>Download CV ↓</a>
+            <a class="btn btn-ghost" href="https://www.linkedin.com/in/anas-kabir-mscse-ocp/" target="_blank" rel="noopener">LinkedIn ↗</a>
+          </div>
+          <div class="id-tags">
+            <span class="id-tag">Bangladeshi National</span>
+            <span class="id-tag">Valid Passport</span>
+            <span class="id-tag">No Visa Restrictions</span>
+            <span class="id-tag">Available for Relocation</span>
+          </div>
+        </div>
+        <div class="hero-id">
+          <div class="id-plate frame">
+            <span class="tick-bl"></span><span class="tick-br"></span>
+            <img src="./headshot.jpg" alt="Md Anas Kabir">
+          </div>
+          <div class="id-caption">M. ANAS KABIR<br>OCP · ORACLE DBA</div>
+        </div>
+      </div>
+
+      <div class="schematic-wrap">
+        <div class="schematic-label">// SYSTEM TOPOLOGY — PRODUCTION RAC + DATA GUARD (AS MANAGED)</div>
+        <svg class="schematic" viewBox="0 0 900 230" xmlns="http://www.w3.org/2000/svg">
+          <rect class="node" x="40" y="20" width="180" height="50"/>
+          <text x="130" y="42" font-size="12" text-anchor="middle">RAC NODE 1</text>
+          <text class="sub" x="130" y="58" font-size="9" text-anchor="middle">cmhr1 · Grid Infra</text>
+
+          <rect class="node" x="320" y="20" width="180" height="50"/>
+          <text x="410" y="42" font-size="12" text-anchor="middle">RAC NODE 2</text>
+          <text class="sub" x="410" y="58" font-size="9" text-anchor="middle">cmhr2 · Grid Infra</text>
+
+          <line class="solid" x1="220" y1="45" x2="320" y2="45"/>
+          <text class="sub" x="270" y="36" font-size="8" text-anchor="middle">CACHE FUSION</text>
+
+          <rect class="node" x="150" y="120" width="230" height="50"/>
+          <text x="265" y="142" font-size="12" text-anchor="middle">SHARED STORAGE</text>
+          <text class="sub" x="265" y="158" font-size="9" text-anchor="middle">ASM Disk Groups</text>
+
+          <line class="solid" x1="150" y1="70" x2="220" y2="120"/>
+          <line class="solid" x1="410" y1="70" x2="340" y2="120"/>
+
+          <rect class="node" x="620" y="120" width="220" height="50"/>
+          <text x="730" y="142" font-size="12" text-anchor="middle">STANDBY DATABASE</text>
+          <text class="sub" x="730" y="158" font-size="9" text-anchor="middle">Data Guard · Max Availability</text>
+
+          <path d="M380 145 L620 145" stroke-dasharray="4 4"/>
+          <text class="sub" x="500" y="136" font-size="8" text-anchor="middle">REDO TRANSPORT &amp; APPLY</text>
+
+          <rect class="node" x="620" y="20" width="220" height="50"/>
+          <text x="730" y="42" font-size="12" text-anchor="middle">OEM 24AI</text>
+          <text class="sub" x="730" y="58" font-size="9" text-anchor="middle">Monitoring &amp; Alerting</text>
+
+          <path d="M500 45 L620 45" stroke-dasharray="2 3"/>
+          <path d="M500 45 L560 45 L560 120" stroke-dasharray="2 3"/>
+          <text class="sub" x="560" y="90" font-size="8" text-anchor="middle">METRICS</text>
+
+          <circle class="pip" cx="40" cy="200" r="4"/>
+          <text x="52" y="204" font-size="10">RTO &lt; 15 MIN · RPO ≈ 0 — validated via live switchover/failover drills</text>
+        </svg>
+      </div>
+
+      <div class="stat-row">
+        <div class="stat"><div class="stat-num">5+</div><div class="stat-label">Years of Oracle DBA experience</div></div>
+        <div class="stat"><div class="stat-num">16</div><div class="stat-label">Certifications — Oracle DB, security &amp; cloud</div></div>
+        <div class="stat"><div class="stat-num">3</div><div class="stat-label">Sectors — healthcare, banking, government</div></div>
+        <div class="stat"><div class="stat-num">4</div><div class="stat-label">Target markets — QA · UAE · MY · AU</div></div>
+      </div>
+    </div>
+  </section>
+
+  <section id="about" class="wrap reveal">
+    <div class="section-head">
+      <div>
+        <div class="sheet-no">SHEET <b>02</b> / 07</div>
+        <h2 class="section-title">About</h2>
+      </div>
+    </div>
+    <div class="about-grid">
+      <div class="about-text">
+        <p>
+          I'm an <strong>OCP-certified Oracle Database Administrator</strong> based in Dhaka,
+          Bangladesh, with 5+ years of hands-on experience managing mission-critical Oracle
+          environments across <strong>healthcare, banking, and government</strong> sectors —
+          domains where uptime, data integrity, and compliance are non-negotiable.
+        </p>
+        <p>
+          My core strength is full lifecycle Oracle database ownership: <strong>19c/12c/11g
+          administration</strong>, high-availability architecture with <strong>RAC and Grid
+          Infrastructure</strong>, <strong>RMAN</strong> backup and recovery, <strong>Data
+          Guard</strong> configuration, performance tuning with AWR/ADDM/ASH, database security
+          via Oracle AVDF, and replication with <strong>GoldenGate</strong> and
+          <strong>Exadata</strong>.
+        </p>
+        <p>
+          I hold an <strong>MSc in Software Engineering</strong> from United International
+          University with additional specialization in Oracle RAC, Data Guard, and database
+          security, and I'm currently exploring senior Oracle DBA and enterprise infrastructure
+          roles across the Gulf and Southeast Asia.
+        </p>
+      </div>
+      <div class="spec-table">
+        <h3>Open to relocation</h3>
+        <div class="spec-row"><span class="spec-code">QA</span><span class="spec-name">Qatar</span><span class="status-pip active">ACTIVE</span></div>
+        <div class="spec-row"><span class="spec-code">AE</span><span class="spec-name">UAE — Abu Dhabi / Dubai</span><span class="status-pip active">ACTIVE</span></div>
+        <div class="spec-row"><span class="spec-code">MY</span><span class="spec-name">Malaysia</span><span class="status-pip active">ACTIVE</span></div>
+        <div class="spec-row"><span class="spec-code">AU</span><span class="spec-name">Australia</span><span class="status-pip open">OPEN</span></div>
+      </div>
+    </div>
+  </section>
+
+  <section id="certifications" class="wrap reveal">
+    <div class="section-head">
+      <div>
+        <div class="sheet-no">SHEET <b>03</b> / 07</div>
+        <h2 class="section-title">Certifications</h2>
+      </div>
+    </div>
+    <div class="cert-grid">
+      <div class="cert">
+        <div class="stamp">OCP<br>2024</div>
+        <div class="cert-code">OCP · TUNING — SEP 2024</div>
+        <div class="cert-name"><a href="https://catalog-education.oracle.com/ords/certview/sharebadge?id=9DEAC3AA49FB0399633E6ABAA7BA2063127D7189CD8CFE2641635EF6B800C8AD" target="_blank" rel="noopener">Oracle Certified Professional — DB 19c: Performance Management &amp; Tuning</a></div>
+        <div class="cert-issuer">Oracle Corporation</div>
+      </div>
+      <div class="cert">
+        <div class="stamp">OCP<br>2024</div>
+        <div class="cert-code">OCP · SECURITY — SEP 2024</div>
+        <div class="cert-name"><a href="https://catalog-education.oracle.com/ords/certview/sharebadge?id=EB7188C2019C1F9767B0F5624B45D971FADEDA26897A7D3FAD6683B7DFC7D954" target="_blank" rel="noopener">Oracle Certified Professional — Oracle Database Security Expert</a></div>
+        <div class="cert-issuer">Oracle Corporation</div>
+      </div>
+      <div class="cert">
+        <div class="stamp">OCP<br>2024</div>
+        <div class="cert-code">OCP · RAC / GRID — MAY 2024</div>
+        <div class="cert-name"><a href="https://catalog-education.oracle.com/ords/certview/sharebadge?id=ADE8A8D686B4BBE262D596B5CD6A2EF420F5ED34F3C1AF504CF4FB5068F0ACF6" target="_blank" rel="noopener">Oracle Certified Professional — DB 19c: RAC, ASM &amp; Grid Infrastructure Administrator</a></div>
+        <div class="cert-issuer">Oracle Corporation</div>
+      </div>
+      <div class="cert">
+        <div class="stamp">OCP<br>2024</div>
+        <div class="cert-code">OCP · DBA — FEB 2024</div>
+        <div class="cert-name"><a href="https://catalog-education.oracle.com/ords/certview/sharebadge?id=F255A6A78FCE699A16E4894F4A7E1D122500D08FE30562A8549DADBD5D40AEEC" target="_blank" rel="noopener">Oracle Database Administration 2019 Certified Professional</a></div>
+        <div class="cert-issuer">Oracle Corporation</div>
+      </div>
+      <div class="cert">
+        <div class="stamp">CIS<br>2024</div>
+        <div class="cert-code">GOLDENGATE — FEB 2024</div>
+        <div class="cert-name"><a href="https://catalog-education.oracle.com/ords/certview/sharebadge?id=707C98EA26D663CF1DC45FD2E66A7B5DA11217D58E8767FAF46C811B3EE39506" target="_blank" rel="noopener">Oracle GoldenGate 12c Certified Implementation Specialist</a></div>
+        <div class="cert-issuer">Oracle Corporation</div>
+      </div>
+      <div class="cert">
+        <div class="stamp">CIS<br>2024</div>
+        <div class="cert-code">EXADATA — FEB 2024</div>
+        <div class="cert-name"><a href="https://catalog-education.oracle.com/ords/certview/sharebadge?id=8FBCDAE651E128CEF843E1BAA3B794946AC5AC18509B3F0B9BEEA51A5776E88F" target="_blank" rel="noopener">Oracle Exadata Database Machine X9M Certified Implementation Specialist</a></div>
+        <div class="cert-issuer">Oracle Corporation</div>
+      </div>
+    </div>
+
+    <div class="cert-more">
+      <h3>Additional certifications</h3>
+      <div class="more-row"><a href="https://catalog-education.oracle.com/ords/certview/sharebadge?id=487E5E56E10F6D2032AE28FE9C8246247B51CC2AB12D6F5DE2589CEC99376E3D" target="_blank" rel="noopener">Oracle Cloud Infrastructure 2024 Generative AI Certified Professional</a><span class="more-date">JUN 2024</span></div>
+      <div class="more-row"><a href="https://catalog-education.oracle.com/ords/certview/sharebadge?id=487E5E56E10F6D2032AE28FE9C82462405F3DFA1A33DE5AFA998FD4F53219543" target="_blank" rel="noopener">Oracle Cloud Infrastructure 2023 Certified Observability Professional</a><span class="more-date">JUN 2023</span></div>
+      <div class="more-row"><a href="https://catalog-education.oracle.com/ords/certview/sharebadge?id=C9089CF661395C18A14EF7947B75879C3E71453D029063ECD6CBEDBE87A31F81" target="_blank" rel="noopener">Oracle APEX Cloud Developer Certified Professional</a><span class="more-date">MAY 2025</span></div>
+      <div class="more-row"><a href="https://www.credly.com/badges/c94cf0e4-04a8-4fb5-b045-51fa6afe3f56/linked_in_profile" target="_blank" rel="noopener">Oracle Certified Professional — Oracle Fusion Middleware 11g Forms Developer</a><span class="more-date">JUL 2019</span></div>
+      <div class="more-row"><a href="https://www.credly.com/badges/5de927c7-fb35-48cf-a081-ad75b50fb5ff" target="_blank" rel="noopener">Oracle PL/SQL Developer Certified Associate</a><span class="more-date">JUL 2019</span></div>
+      <div class="more-row"><a href="https://www.coursera.org/account/accomplishments/verify/ZJSMW7FCXAFF" target="_blank" rel="noopener">Ethical Hacking Essentials (EHE), Coursera</a><span class="more-date">JAN 2024</span></div>
+      <div class="more-row"><a href="https://learn.mongodb.com/c/G_sMsBCbRcymMxZAPAgR5w" target="_blank" rel="noopener">SI Associate, MongoDB</a><span class="more-date">JAN 2024</span></div>
+      <div class="more-row"><a href="https://catalog-education.oracle.com/ords/certview/sharebadge?id=E2C5A9E8E8FDDEE68B5B5ABB24DFF8EEB6C2B1287C54A3B4BF20DFED41EAE55B" target="_blank" rel="noopener">Oracle Cloud Infrastructure 2023 AI Certified Foundations Associate</a><span class="more-date">2023</span></div>
+      <div class="more-row"><a href="https://catalog-education.oracle.com/ords/certview/sharebadge?id=0A1E4E5A795D09D424517C411EEF360C8BE5E9FE885DC0DD0E6523622804E813" target="_blank" rel="noopener">Oracle Cloud Infrastructure 2023 Certified Foundations Associate</a><span class="more-date">2023</span></div>
+      <div class="more-row"><a href="https://catalog-education.oracle.com/ords/certview/sharebadge?id=7EE3552BBCE1BD4FD98B57FEEF0F97993A0ADF46200DC53CF793F3D804FFC223" target="_blank" rel="noopener">Oracle Cloud Data Management 2023 Certified Foundations Associate</a><span class="more-date">2023</span></div>
+    </div>
+  </section>
+
+  <section id="skills" class="wrap reveal">
+    <div class="section-head">
+      <div>
+        <div class="sheet-no">SHEET <b>04</b> / 07</div>
+        <h2 class="section-title">Skills</h2>
+      </div>
+    </div>
+    <div class="skills-grid">
+      <div class="skill-cat">
+        <h3>Oracle database</h3>
+        <div class="pill-row">
+          <span class="pill">Oracle 19c / 12c / 11g</span><span class="pill">Multitenant CDB/PDB</span>
+          <span class="pill">Partitioning</span><span class="pill">Compression</span>
+          <span class="pill">Advanced Security</span><span class="pill">Label Security</span>
+        </div>
+      </div>
+      <div class="skill-cat">
+        <h3>High availability &amp; DR</h3>
+        <div class="pill-row">
+          <span class="pill">Oracle RAC</span><span class="pill">Grid Infrastructure</span>
+          <span class="pill">Data Guard (Physical &amp; Logical)</span><span class="pill">Broker (dgmgrl)</span>
+          <span class="pill">Flashback DB</span><span class="pill">GoldenGate</span>
+        </div>
+      </div>
+      <div class="skill-cat">
+        <h3>Backup &amp; recovery</h3>
+        <div class="pill-row">
+          <span class="pill">RMAN (Full / Incremental / Archivelog)</span>
+          <span class="pill">Encrypted Backups</span><span class="pill">PITR</span>
+          <span class="pill">Transportable Tablespaces</span>
+        </div>
+      </div>
+      <div class="skill-cat">
+        <h3>Performance tuning</h3>
+        <div class="pill-row">
+          <span class="pill">AWR</span><span class="pill">ADDM</span><span class="pill">ASH</span>
+          <span class="pill">SQL Tuning Advisor</span><span class="pill">SQL Access Advisor</span>
+          <span class="pill">Explain Plan &amp; Hints</span><span class="pill">Memory Tuning</span>
+        </div>
+      </div>
+      <div class="skill-cat">
+        <h3>Storage &amp; platform</h3>
+        <div class="pill-row">
+          <span class="pill">ASM</span><span class="pill">Oracle Exadata X9M</span>
+          <span class="pill">Oracle Database Appliance (ODA)</span><span class="pill">Smart Scan</span>
+          <span class="pill">HCC</span><span class="pill">IORM</span><span class="pill">OCI Block Storage</span>
+        </div>
+      </div>
+      <div class="skill-cat">
+        <h3>Security &amp; compliance</h3>
+        <div class="pill-row">
+          <span class="pill">Oracle AVDF</span><span class="pill">TDE</span>
+          <span class="pill">Database Auditing</span><span class="pill">VPD</span>
+          <span class="pill">Privilege Analysis</span><span class="pill">OPatch &amp; PSU/RU Patching</span>
+          <span class="pill">DB Vault</span>
+        </div>
+      </div>
+      <div class="skill-cat">
+        <h3>Monitoring &amp; automation</h3>
+        <div class="pill-row">
+          <span class="pill">Oracle Enterprise Manager (OEM)</span><span class="pill">Shell Scripting</span>
+          <span class="pill">Cron Scheduling</span><span class="pill">Data Pump (expdp/impdp)</span>
+        </div>
+      </div>
+      <div class="skill-cat">
+        <h3>Platform &amp; infrastructure</h3>
+        <div class="pill-row">
+          <span class="pill">Oracle Linux</span><span class="pill">VMware ESXi</span>
+          <span class="pill">IBM Power AIX</span><span class="pill">Windows Server</span>
+          <span class="pill">Oracle Cloud Infrastructure (OCI)</span><span class="pill">WebLogic Server</span>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section id="experience" class="wrap reveal">
+    <div class="section-head">
+      <div>
+        <div class="sheet-no">SHEET <b>05</b> / 07</div>
+        <h2 class="section-title">Experience</h2>
+      </div>
+    </div>
+    <div class="rev-history">
+      <div class="rev-row">
+        <div class="rev-tag">R5</div>
+        <div class="rev-period">Dec 2024 — Present</div>
+        <div>
+          <div class="rev-role">Database Administrator &amp; Server Engineer</div>
+          <div class="rev-org">Combined Military Hospital (CMH), Dhaka, Bangladesh</div>
+          <ul class="rev-list">
+            <li>Administer Oracle Database 19c RAC production environments in a mission-critical hospital setting, ensuring 99.9%+ uptime across all clinical and administrative database systems.</li>
+            <li>Configure and monitor Oracle Data Guard physical standby databases for HA/DR; conduct periodic failover and switchover testing to validate DR readiness.</li>
+            <li>Manage ASM disk groups, storage capacity planning, and datafile/tablespace/segment-level administration across production and standby environments.</li>
+            <li>Deploy and configure Oracle Enterprise Manager (OEM 24ai) for centralized monitoring, metric thresholds, incident rules, and automated alerting.</li>
+            <li>Perform AWR, ADDM, and ASH-driven performance analysis, resolving top SQL, wait events, and resource bottlenecks.</li>
+            <li>Automate routine DBA tasks — log archive management, stats gathering, health checks, space monitoring — via Shell scripts and cron scheduling.</li>
+          </ul>
+        </div>
+      </div>
+      <div class="rev-row">
+        <div class="rev-tag">R4</div>
+        <div class="rev-period">Apr 2023 — Nov 2024</div>
+        <div>
+          <div class="rev-role">Solution Engineer - Oracle</div>
+          <div class="rev-org">Smart Technologies BD Ltd., Dhaka, Bangladesh</div>
+          <ul class="rev-list">
+            <li>Deployed and configured Oracle RAC environments on Oracle Database Appliance (ODA) for banking sector clients, delivering HA clustered infrastructure with automatic failover.</li>
+            <li>Configured Data Guard physical and logical standby databases in maximum availability mode; automated failover with Data Guard Broker (dgmgrl).</li>
+            <li>Designed and executed RMAN backup and recovery strategies including encrypted backups, cross-platform transportable tablespaces, and point-in-time recovery for financial sector clients.</li>
+            <li>Deployed Oracle Audit Vault &amp; Database Firewall (AVDF) for Exadata activity monitoring, SQL firewall policy enforcement, and compliance reporting across government and banking environments.</li>
+            <li>Gained hands-on lab experience with Oracle GoldenGate — installation, configuration, and real-time replication setup in a non-production environment.</li>
+          </ul>
+        </div>
+      </div>
+      <div class="rev-row">
+        <div class="rev-tag">R3</div>
+        <div class="rev-period">Sep 2022 — Apr 2023</div>
+        <div>
+          <div class="rev-role">Senior Executive IT (Oracle)</div>
+          <div class="rev-org">Eastern Housing Limited, Dhaka, Bangladesh</div>
+          <ul class="rev-list">
+            <li>Administered Oracle Database 12c production and development environments on Oracle Linux, managing schema objects, tablespaces, users, roles, and privileges.</li>
+            <li>Implemented and maintained RMAN backup schedules; performed datafile and tablespace recovery for critical and non-critical outages.</li>
+            <li>Monitored performance via OEM and AWR reports, tuning high-load SQL and resolving locking/blocking issues.</li>
+            <li>Managed Oracle Net connectivity — listener configuration, tnsnames, and connection pooling — for in-house ERP applications.</li>
+          </ul>
+        </div>
+      </div>
+      <div class="rev-row">
+        <div class="rev-tag">R2</div>
+        <div class="rev-period">May 2021 — Jul 2022</div>
+        <div>
+          <div class="rev-role">Asst. Software Engineer</div>
+          <div class="rev-org">Xactidea Ltd., Dhaka, Bangladesh</div>
+          <ul class="rev-list">
+            <li>Supported Oracle DBA activities including user/privilege management, tablespace monitoring, RMAN backup and recovery, performance tuning, and database security in Windows Server environments.</li>
+            <li>Installed and administered Oracle WebLogic Server — datasources, JDBC connection pools, and application deployments.</li>
+            <li>Executed Oracle Data Pump (expdp/impdp) for database refreshes, schema migrations, and environment cloning.</li>
+            <li>Developed Oracle APEX applications — interactive reports, dashboards, and master-detail forms using SQL and PL/SQL.</li>
+          </ul>
+        </div>
+      </div>
+      <div class="rev-row">
+        <div class="rev-tag">R1</div>
+        <div class="rev-period">Aug 2019 — May 2020</div>
+        <div>
+          <div class="rev-role">Junior Software Engineer</div>
+          <div class="rev-org">Pridesys IT Ltd., Dhaka, Bangladesh</div>
+          <ul class="rev-list">
+            <li>Developed and maintained Oracle Forms applications using PL/SQL — data entry screens, validation logic, triggers, and business workflows.</li>
+            <li>Designed and customized Oracle Reports, including parameterized, summary, and analytical reports.</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section id="projects" class="wrap reveal">
+    <div class="section-head">
+      <div>
+        <div class="sheet-no">SHEET <b>06</b> / 07</div>
+        <h2 class="section-title">Key Projects</h2>
+      </div>
+    </div>
+
+    <div class="project">
+      <div class="project-head">
+        <span class="sheet-tag">SHT. 01/05</span>
+        <div class="project-title">Oracle RAC, Data Guard DR Validation &amp; OEM Monitoring</div>
+        <div class="project-org">CMH · 2025</div>
+      </div>
+      <p class="project-desc">Designed and validated an end-to-end disaster recovery architecture using Oracle Data Guard physical standby at a military hospital. Ran live switchover and failover drills, verifying RTO under 15 minutes and near-zero RPO. Deployed OEM 24ai for centralized monitoring with custom AWR-based capacity and performance reporting for management.</p>
+    </div>
+
+    <div class="project">
+      <div class="project-head">
+        <span class="sheet-tag">SHT. 02/05</span>
+        <div class="project-title">Oracle AVDF Security Deployment</div>
+        <div class="project-org">Government Statistical Bureau · 2024</div>
+      </div>
+      <p class="project-desc">Deployed Oracle Audit Vault &amp; Database Firewall on VMware ESXi 7.0 to enforce SQL firewall policies and database activity monitoring across 8 Oracle database instances. Configured compliance reports for regulatory audits and trained the DBA team on AVDF policy management and incident response.</p>
+    </div>
+
+    <div class="project">
+      <div class="project-head">
+        <span class="sheet-tag">SHT. 03/05</span>
+        <div class="project-title">Oracle WebLogic 12c &amp; Oracle Forms/Reports Deployment</div>
+        <div class="project-org">Eastern Housing Limited · 2023</div>
+      </div>
+      <p class="project-desc">Deployed and configured Oracle WebLogic Server 12c to support Oracle Forms and Reports applications in production. Integrated Forms &amp; Reports services with the WebLogic domain, configured managed servers and OHS routing, and provided technical support for business-critical ERP forms and reporting modules.</p>
+    </div>
+
+    <div class="project">
+      <div class="project-head">
+        <span class="sheet-tag">SHT. 04/05</span>
+        <div class="project-title">Oracle Infrastructure Deployment</div>
+        <div class="project-org">NZ Group · 2022</div>
+      </div>
+      <p class="project-desc">Implemented VMware ESXi 7.0.3 virtualization to support enterprise workloads. Deployed and administered Oracle Linux 7 and Windows Server 2019 VMs with secure networking, and installed Oracle Database 19c to provide a reliable database platform across a secure private virtual network.</p>
+    </div>
+
+    <div class="project">
+      <div class="project-head">
+        <span class="sheet-tag">SHT. 05/05</span>
+        <div class="project-title">Oracle APEX, ORDS, Web Server &amp; Database Deployment</div>
+        <div class="project-org">Xactidea Ltd. (Garments ERP System) · 2021</div>
+      </div>
+      <p class="project-desc">Installed and configured Oracle Database 11g/12c to support an ERP system. Deployed Oracle APEX 19.x, ORDS 19.x, and Apache Tomcat 9.x on Oracle Linux and Windows Server, and configured Oracle Forms &amp; Reports 11g for legacy modules and reporting.</p>
+    </div>
+  </section>
+
+  <section id="education" class="wrap reveal">
+    <div class="section-head">
+      <div>
+        <div class="sheet-no">SHEET <b>07</b> / 07</div>
+        <h2 class="section-title">Education &amp; Languages</h2>
+      </div>
+    </div>
+    <div class="edu-lang-grid">
+      <div>
+        <div class="edu-item">
+          <div class="edu-degree">M.Sc. Software Engineering</div>
+          <div class="edu-school">United International University, Dhaka</div>
+          <div class="edu-when">2021 – 2023</div>
+        </div>
+        <div class="edu-item">
+          <div class="edu-degree">B.S.S. Anthropology</div>
+          <div class="edu-school">Jahangirnagar University, Dhaka</div>
+          <div class="edu-when">2013 – 2016</div>
+        </div>
+        <div class="edu-item">
+          <div class="edu-degree">Professional IT Diploma — Database Design &amp; Dev</div>
+          <div class="edu-school">IsDB-BISEW</div>
+          <div class="edu-when">2018 – 2019</div>
+        </div>
+      </div>
+      <div>
+        <div class="lang-item">
+          <div class="lang-top"><span>Bengali</span><span class="lang-level">NATIVE / FLUENT</span></div>
+          <div class="gauge"><span style="width:100%"></span></div>
+        </div>
+        <div class="lang-item">
+          <div class="lang-top"><span>English</span><span class="lang-level">PROFESSIONAL WORKING</span></div>
+          <div class="gauge"><span style="width:78%"></span></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <footer id="contact" class="frame">
+    <span class="tick-bl"></span><span class="tick-br"></span>
+    <div class="wrap">
+      <div class="contact-grid">
+        <div>
+          <div class="eyebrow-dark2">// availability</div>
+          <h2 class="contact-title">Open to Oracle DBA &amp; enterprise infrastructure roles in the Gulf, Malaysia, and Australia.</h2>
+        </div>
+        <ul class="contact-list">
+          <li><span class="contact-label">Email</span><a href="mailto:dba.mak.oracle@gmail.com">dba.mak.oracle@gmail.com</a></li>
+          <li><span class="contact-label">Phone</span><a href="tel:+8801730680034">+88-01730680034</a></li>
+          <li><span class="contact-label">LinkedIn</span><a href="https://www.linkedin.com/in/anas-kabir-mscse-ocp/" target="_blank" rel="noopener">Md Anas Kabir</a></li>
+          <li><span class="contact-label">Location</span><span>Dhaka, Bangladesh</span></li>
+        </ul>
+      </div>
+      <div class="foot-titleblock">
+        <span>DRAWN BY: M. A. KABIR</span>
+        <span>© <span id="year"></span> Md Anas Kabir — Oracle Database Administrator</span>
+        <span>STATIC SITE · GITHUB PAGES</span>
+      </div>
+    </div>
+  </footer>
+</main>
+
+<script>
+  document.getElementById('year').textContent = new Date().getFullYear();
+
+  if (!window.matchMedia('(prefers-reduced-motion: reduce)').matches){
+    const items = document.querySelectorAll('.reveal');
+    const io = new IntersectionObserver((entries) => {
+      entries.forEach(e => { if(e.isIntersecting){ e.target.classList.add('in'); io.unobserve(e.target); } });
+    }, { threshold: 0.12 });
+    items.forEach(el => io.observe(el));
+  } else {
+    document.querySelectorAll('.reveal').forEach(el => el.classList.add('in'));
+  }
+</script>
+</body>
+</html>
